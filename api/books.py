@@ -14,7 +14,7 @@ limiter = Limiter(key_func=get_remote_address)
 
 
 @router.get("/books",
-summary="List all books with filters",
+summary="List all books with optional filters",
 status_code=200)
 @limiter.limit("100/hour")
 async def list_books(
@@ -29,7 +29,7 @@ async def list_books(
 ):
     db = get_db()
     query = {}
-    if category: query["category"] = category
+    if category: query["category"] = {"$regex": f"^{category}$", "$options": "i"}
     if rating: query["rating"] = rating
     if min_price or max_price:
         price_filter = {}
@@ -53,18 +53,19 @@ async def list_books(
     print("Query used:", query)
     print("Count found:", await db.books.count_documents(query))
     print("Total books in DB:", await db.books.count_documents({}))
-    
 
     return {"page": page, "per_page": per_page, "items": results}
 
 
 
 @router.get("/books/{book_id}",
-summary="Get one book by objectID",
+summary="Get one book by book id",
 status_code=200)
-async def get_book(book_id: str, api_key = Depends(get_api_key)):
+async def get_book(book_id: int, api_key = Depends(get_api_key)):
     db = get_db()
-    doc = await db.books.find_one({"_id": ObjectId(book_id)})
+    doc = await db.books.find_one({"book_id": book_id})
     if not doc:
-        raise HTTPException(404, "Not found")
+        raise HTTPException(404, "Book Not found")
+    doc["_id"] = str(doc["_id"])
+
     return doc

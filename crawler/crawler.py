@@ -43,6 +43,7 @@ async def crawl_book(url: str, db):
     resp = await fetch(url)
     html = resp.text
     parsed = parse_book_page(html, url)  # returns dict with fields matching Book model
+
     parsed['raw_html'] = html
     parsed['crawl'] = {
         'last_crawled_at': datetime.utcnow(),
@@ -50,21 +51,23 @@ async def crawl_book(url: str, db):
         'source': BASE,
         'fingerprint': fingerprint_book(parsed)
     }
+
     # upsert by source_url and create change log if fingerprint differs
     existing = await db.books.find_one({"source_url": parsed["source_url"]})
     if existing:
         old_fp = existing.get('crawl', {}).get('fingerprint')
         new_fp = parsed['crawl']['fingerprint']
         if old_fp != new_fp:
-            # compute field diffs
+            # compute field differences
             diffs = []
             for k in ('price_incl_tax', 'availability', 'rating'):
                 if existing.get(k) != parsed.get(k):
                     diffs.append({"field": k, "old": existing.get(k), "new": parsed.get(k)})
+            
             # insert change logs
             for d in diffs:
                 await db.change_logs.insert_one({
-                    "book_id": existing['_id'],
+                    "book_id": existing['book_id'],
                     "source_url": parsed['source_url'],
                     "timestamp": datetime.utcnow(),
                     "change": d,
@@ -72,15 +75,23 @@ async def crawl_book(url: str, db):
                     "fingerprint_old": old_fp,
                     "fingerprint_new": new_fp
                 })
-            # update book doc
+            #update book metadata
             parsed['metadata'] = {
                 "last_changed_at": datetime.utcnow()
             }
+            parsed['book_id'] = existing['book_id']
+
         # update crawl metadata and replace
         await db.books.replace_one({"_id": existing["_id"]}, parsed, upsert=True)
+
     else:
+        #Insert new book entry to db 
+        last = await db.books.find_one(sort=[("book_id", -1)])
+        next_id = 1 if not last else last["book_id"] + 1
+        parsed['book_id'] = next_id
         parsed['metadata'] = {"first_seen": datetime.utcnow()}
         res = await db.books.insert_one(parsed)
+
     logger.info(f"Processed {url}")
 
 
@@ -100,7 +111,6 @@ async def crawl_all(concurrency:int = 20):
                 print(f"No more pages after page {page-1}")
                 break
         except httpx.HTTPStatusError as e:
-            # stop when 404 or end of pages
             if e.response.status_code == 404:
                 break
             else:

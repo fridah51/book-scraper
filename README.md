@@ -1,5 +1,6 @@
-A fastAPI system for crawling, detecting changes, and serving book data from https://books.toscrape.com.
-# BooksToScrape Crawler & API System
+# Books To Scrape Crawler & API System
+
+A FastAPI system for crawling, detecting changes, and serving book data from https://books.toscrape.com.
 
 ## Features
 
@@ -18,7 +19,7 @@ A fastAPI system for crawling, detecting changes, and serving book data from htt
 ---
 
 ## Architecture
-Fk assgn/
+book-scraper/
 │
 ├── api/ # REST API
 ├── crawler/ # Async crawler logic
@@ -34,7 +35,7 @@ Fk assgn/
 ├── .env.example
 └── README.md
 
-# Setup Instructions
+## Setup Instructions
 
 ```bash
     1. Clone Repository
@@ -45,6 +46,7 @@ Fk assgn/
         venv\Scripts\activate
 
     3. Install dependencies
+        python 3.13
         pip install -r requirements.txt
 
     4. Environment Variables
