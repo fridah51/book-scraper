@@ -1,0 +1,24 @@
+{
+  "_id": ObjectId("..."),
+  "source_url": "https://books.toscrape.com/catalogue/itz-ordered_123/index.html",
+  "title": "A Light in the Attic",
+  "description": "....",
+  "category": "Poetry",
+  "price_excl_tax": 51.77,
+  "price_incl_tax": 54.59,
+  "availability": "In stock (22 available)",
+  "num_reviews": 0,
+  "image_url": "http://.../media/cache/xx.jpg",
+  "rating": 3,                   
+  "crawl": {
+    "last_crawled_at": ISODate("2025-11-25T08:00:00Z"),
+    "status": "ok",
+    "source": "https://books.toscrape.com",
+    "fingerprint": "sha256hex-of-normalized-content"
+  },
+  "raw_html": "<!doctype html>....", 
+  "metadata": {
+    "first_seen": ISODate(...),
+    "last_changed_at": ISODate(...)
+  }
+}

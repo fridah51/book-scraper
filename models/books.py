@@ -2,11 +2,13 @@ from pydantic import BaseModel, HttpUrl, Field
 from typing import Optional
 from datetime import datetime
 
+
 class CrawlMeta(BaseModel):
     last_crawled_at: datetime
     status: str
     source: str
     fingerprint: str
+
 
 class Book(BaseModel):
     book_id:int

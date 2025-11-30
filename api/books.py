@@ -59,8 +59,7 @@ async def list_books(
 
 
 @router.get("/books/{book_id}",
-summary="Get one book by book id",
-status_code=200)
+summary="Get one book by book id")
 async def get_book(book_id: int, api_key = Depends(get_api_key)):
     db = get_db()
     doc = await db.books.find_one({"book_id": book_id})

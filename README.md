@@ -2,21 +2,6 @@
 
 A FastAPI system for crawling, detecting changes, and serving book data from https://books.toscrape.com.
 
-## Features
-
-✔ Async crawler using httpx & asyncio  
-✔ MongoDB storage with deduplication  
-✔ Daily scheduler with change detection  
-✔ Change logs and daily report  
-✔ Secure FastAPI REST API with API key  
-✔ Filtering, sorting, pagination  
-✔ Pydantic validation  
-✔ Retry logic and fault handling  
-✔ Dockerized MongoDB  
-✔ Resume crawl support  
-✔ Content hashing for change detection  
-
----
 
 ## Architecture
 book-scraper/
@@ -27,7 +12,7 @@ book-scraper/
 ├── db/ # MongoDB connection
 ├── models/ # Pydantic schemas
 ├── scripts/ # Manual triggers
-├── utils/ # Logging & helpers
+├── utilitiess/ # Logging & helpers
 ├── tests/ # Unit tests
 │
 ├── Dockerfile
@@ -62,14 +47,15 @@ book-scraper/
         CRAWL_CONCURRENCY=10
         LOG_LEVEL=INFO
 
-    5. Spin Up MongoDB (Docker)
+    5. Spin Up MongoDB using Docker image mongo
         docker run -d -p -27017:27017 mongo
 
     6. Start API Server
-        uvicorn main:app --reload
+        locally: uvicorn main:app --reload
+            Visit Swagger UI :
+            http://localhost:8000/docs
+        docker : docker compose up -d 
 
-        Visit Swagger UI :
-        http://localhost:8000/docs
         
     7. API Endpoints
     GET /books
@@ -103,4 +89,20 @@ book-scraper/
 
     10. Testing
         Run:
-            pytest
+            pytest -v
+
+
+
+
+
+
+
+
+INFO:     Waiting for application startup.
+[2025-11-30 17:22:46] [INFO] [scheduler.jobs] Scheduler started. Waiting for jobs...
+INFO:     Application startup complete.
+[2025-11-30 17:24:00] [INFO] [scheduler.jobs] Starting scheduled daily crawl...
+No more pages after page 50
+[2025-11-30 17:39:02] [INFO] [scheduler.jobs] Scheduled Crawl finished successfully
+Report generated for 2025-11-30
+[2025-11-30 17:39:02] [INFO] [scheduler.jobs] Daily change report generated
