@@ -87,16 +87,3 @@ book-scraper/
 
 
 
-
-
-
-
-
-INFO:     Waiting for application startup.
-[2025-11-30 17:22:46] [INFO] [scheduler.jobs] Scheduler started. Waiting for jobs...
-INFO:     Application startup complete.
-[2025-11-30 17:24:00] [INFO] [scheduler.jobs] Starting scheduled daily crawl...
-No more pages after page 50
-[2025-11-30 17:39:02] [INFO] [scheduler.jobs] Scheduled Crawl finished successfully
-Report generated for 2025-11-30
-[2025-11-30 17:39:02] [INFO] [scheduler.jobs] Daily change report generated
