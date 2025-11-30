@@ -41,21 +41,15 @@ book-scraper/
         MONGO_URI=mongodb://mongo:27017
         DATABASE_NAME=booksdb
         API_KEYS=key1,key2
-        REDIS_URL=redis://redis:6379/0
 
-        RATE_LIMIT=100/hour
-        CRAWL_CONCURRENCY=10
-        LOG_LEVEL=INFO
 
     5. Spin Up MongoDB using Docker image mongo
         docker run -d -p -27017:27017 mongo
 
     6. Start API Server
         locally: uvicorn main:app --reload
-            Visit Swagger UI :
-            http://localhost:8000/docs
-        docker : docker compose up -d 
-
+            Visit Swagger UI : http://localhost:8000/docs
+            docker : docker compose up -d 
         
     7. API Endpoints
     GET /books
