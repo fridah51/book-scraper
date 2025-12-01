@@ -1,14 +1,15 @@
 import pytest
 import asyncio
 from crawler.crawler import crawl_book
-from db.mongo import get_db
+from db.mongo import get_test_db
 
 TEST_URL = "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html"
+TEST_BOOK_ID = 9999  # unique for testing
 
 
 @pytest.mark.asyncio
 async def test_crawl_single_book():
-    db = get_db()
+    db = get_test_db()
 
     # Clear test entry if already exists
     await db.books.delete_many({"source_url": TEST_URL})
@@ -26,3 +27,7 @@ async def test_crawl_single_book():
     assert "raw_html" in book
     assert "crawl" in book
     assert book["crawl"]["status"] == "ok"
+
+    # Clean up DB after test
+    await db.books.delete_many({"source_url": TEST_URL})
+

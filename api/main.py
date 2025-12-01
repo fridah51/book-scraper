@@ -6,12 +6,12 @@ from slowapi.util import get_remote_address
 from slowapi.middleware import SlowAPIMiddleware
 from dotenv import load_dotenv
 from contextlib import asynccontextmanager
-
-
 from scheduler.jobs import init_scheduler
+
 load_dotenv()
 
-# ---------- Scheduler ----------
+
+# ---------- Initialize Scheduler on startup----------
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_scheduler()

@@ -1,4 +1,3 @@
-from bson import ObjectId
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from typing import Optional
 
@@ -23,7 +22,7 @@ async def list_books(
     min_price: Optional[float] = None,
     max_price: Optional[float] = None,
     rating: Optional[int] = None,
-    sort_by: Optional[str] = Query(None, regex="^(rating|price|reviews)$"),
+    sort_by: Optional[str] = Query(None, pattern="^(rating|price|reviews)$"),
     page: int = 1, per_page: int = 20,
     api_key = Depends(get_api_key)
 ):

@@ -8,18 +8,15 @@ from utilities.logger import setup_logger
 logger = setup_logger(__name__)
 
 
-
+# run the scheduler and log different stages
 async def crawl_and_detect_changes():
-    """
-    Crawl the site, detect new or updated books, and store changes in MongoDB.
-    """
     try:
         db = get_db()
         logger.info("Starting scheduled daily crawl...")
         await crawl_all()
         logger.info("Scheduled Crawl finished successfully")
 
-        # Optional: generate daily report
+
         await generate_report()
         logger.info("Daily change report generated")
     except Exception as e:
@@ -27,6 +24,7 @@ async def crawl_and_detect_changes():
 
 
 
+# start scheduler called in main on startup
 def init_scheduler():
     scheduler = AsyncIOScheduler()
     

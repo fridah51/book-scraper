@@ -6,7 +6,10 @@ from api.auth import get_api_key
 
 router = APIRouter(tags=["Changes"])
 
-@router.get("/changes")
+
+
+@router.get("/changes",
+summary="See all the changed data in the database")
 async def get_changes(
     days: Optional[int] = 1,
     api_key: str = Depends(get_api_key)

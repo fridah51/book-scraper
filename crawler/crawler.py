@@ -1,5 +1,5 @@
 import asyncio
-from datetime import datetime
+from datetime import datetime, timezone
 import hashlib
 import logging
 import httpx
@@ -18,7 +18,7 @@ timeout = httpx.Timeout(30.0, connect=10.0)
 client = httpx.AsyncClient(timeout=30.0, limits=httpx.Limits(max_connections=20))
 
 
-
+# fetch the url with decorator to handle timeout and server connection
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10),
        retry=retry_if_exception_type((httpx.HTTPError, asyncio.TimeoutError)))
 async def fetch(url: str):
@@ -31,6 +31,7 @@ async def fetch(url: str):
 
 
 
+# fingerprint each book for easy identifying of changes
 def fingerprint_book(data: dict) -> str:
     # canonicalize fields we care about
     core = f"{data['title']}|{data['price_incl_tax']}|{data.get('availability','')}"
@@ -38,6 +39,7 @@ def fingerprint_book(data: dict) -> str:
 
 
 
+# crawl each book ,check for changes and store data in mongo db
 async def crawl_book(url: str, db):
     try:
         resp = await fetch(url)
@@ -62,7 +64,7 @@ async def crawl_book(url: str, db):
 
     parsed['raw_html'] = html
     parsed['crawl'] = {
-        'last_crawled_at': datetime.utcnow(),
+        'last_crawled_at': datetime.now(timezone.utc),
         'status': 'ok',
         'source': BASE,
         'fingerprint': fingerprint_book(parsed)
@@ -89,7 +91,7 @@ async def crawl_book(url: str, db):
                     await db.change_logs.insert_one({
                         "book_id": existing['book_id'],
                         "source_url": parsed['source_url'],
-                        "timestamp": datetime.utcnow(),
+                        "timestamp": datetime.now(timezone.utc),
                         "change": d,
                         "reason": "daily_crawl",
                         "fingerprint_old": old_fp,
@@ -109,7 +111,7 @@ async def crawl_book(url: str, db):
             last = await db.books.find_one(sort=[("book_id", -1)])
             next_id = await get_next_book_id(db)
             parsed['book_id'] = next_id
-            parsed['metadata'] = {"first_seen": datetime.utcnow()}
+            parsed['metadata'] = {"first_seen": datetime.now(timezone.utc)}
             res = await db.books.insert_one(parsed)
 
     except Exception as e:
@@ -121,10 +123,10 @@ async def crawl_book(url: str, db):
 
 
 
+# crawl listing pages, collect book urls, then crawl them concurrently
 async def crawl_all(concurrency:int = 10):
     db = get_db()
 
-    # crawl listing pages, collect book urls, then crawl them concurrently
     book_urls = set()
     # pagination loop
     page = 1

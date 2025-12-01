@@ -2,10 +2,14 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 import re
 
+
+
 def normalize_rating(raw: str) -> int:
     # on the site rating classes like "star-rating Three"
     mapping = {'One':1,'Two':2,'Three':3,'Four':4,'Five':5}
     return mapping.get(raw, 0)
+
+
 
 def parse_book_page(html: str, base_url: str) -> dict:
     soup = BeautifulSoup(html, "lxml")
@@ -47,9 +51,11 @@ def parse_book_page(html: str, base_url: str) -> dict:
         "rating": rating
     }
 
+
+
 def list_book_urls_from_listing(html: str):
     soup = BeautifulSoup(html, "lxml")
     anchors = soup.select("article.product_pod h3 a")
     urls = [urljoin("https://books.toscrape.com/catalogue/", a.get('href')) for a in anchors]
-    # clean ../ etc
+
     return urls

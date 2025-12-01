@@ -1,5 +1,7 @@
 from pymongo import ReturnDocument
 
+
+# Generate book_id for every new mongo db entry
 async def get_next_book_id(db):
     doc = await db.counters.find_one_and_update(
         {"_id": "book_id"},
