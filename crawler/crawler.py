@@ -4,6 +4,7 @@ import hashlib
 import logging
 import httpx
 from tenacity import RetryError, retry, stop_after_attempt, wait_exponential, retry_if_exception_type, wait_fixed
+from crawler.utils import get_next_book_id
 from models.books import Book
 from db.mongo import get_db
 from crawler.parser import parse_book_page, list_book_urls_from_listing
@@ -73,6 +74,9 @@ async def crawl_book(url: str, db):
         if existing:
             old_fp = existing.get('crawl', {}).get('fingerprint')
             new_fp = parsed['crawl']['fingerprint']
+            
+            if "book_id" in existing:
+                parsed['book_id'] = existing['book_id']
             if old_fp != new_fp:
                 # compute field differences
                 diffs = []
@@ -103,7 +107,7 @@ async def crawl_book(url: str, db):
         else:
             #Insert new book entry to db 
             last = await db.books.find_one(sort=[("book_id", -1)])
-            next_id = 1 if not last else last["book_id"] + 1
+            next_id = await get_next_book_id(db)
             parsed['book_id'] = next_id
             parsed['metadata'] = {"first_seen": datetime.utcnow()}
             res = await db.books.insert_one(parsed)

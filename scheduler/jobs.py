@@ -31,7 +31,7 @@ def init_scheduler():
     scheduler = AsyncIOScheduler()
     
     # Schedule the crawl daily at 2:00 AM
-    scheduler.add_job(crawl_and_detect_changes, "cron",hour="17", minute="24")
+    scheduler.add_job(crawl_and_detect_changes, "cron",hour="19", minute="28")
     
     scheduler.start()
     logger.info("Scheduler started. Waiting for jobs...")
