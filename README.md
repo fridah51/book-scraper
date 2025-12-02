@@ -43,15 +43,14 @@ book-scraper/
         API_KEYS=key1,key2
 
 
-    5. Spin Up MongoDB using Docker image mongo
-        docker run -d -p -27017:27017 mongo
+    5. Start API Server
+        locally: uvicorn api.main:app --reload
+                 Spin Up MongoDB using Docker image mongo: docker run -d -p -27017:27017 mongo
+                 Visit Swagger UI : http://localhost:8000/docs
 
-    6. Start API Server
-        locally: uvicorn main:app --reload
-            Visit Swagger UI : http://localhost:8000/docs
-            docker : docker compose up -d 
+        docker : docker compose up -d 
         
-    7. API Endpoints
+    6. API Endpoints
     GET /books
 
         Filters:
@@ -72,16 +71,16 @@ book-scraper/
     GET /changes
         Shows history of updates
 
-    8. Authentication
+    7. Authentication
         Include header:
             X-API-Key: supersecretkey123
 
-    9. Reports
+    8. Reports
         Scheduler generates:
 
             /reports/change_report_YYYY-MM-DD.json
 
-    10. Testing
+    9. Testing
         Run:
             pytest -v
 
